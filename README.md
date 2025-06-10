@@ -1,6 +1,3 @@
 # code1
-char[] board array of size 42 with a 7 x 6 grid.
-The scanner class mode is used to add user input and mode selection.
-int mode, boolean playAgain, boolean playerTurn used for controlling game flow and switching players
-Math.random() generates a random column for the computer in mode 2. 
-A loop check from the bottom rows up (r = 5 to 0) to find empty space.
+The board is shown using char[] board array of size 42 with a 7 x 6 grid, with each slot being empty or 'B'(Blue) or 'R' (Red). The Scanner class is used to take user input and select the mode. The mode variable stores the selected game mode (1 for Player vs Player, 2 for Random Computer, 3 for AI). Boolean variables like playAgain keeps the outer loop running for multiple games, playerTurn tracks whose turn it is, and gameEnded controls the gameplay loop. Two integer variables, blueWins and redWins, keep track of each player's score. The logic includes a while loop for repeated turns, input validation for selecting columns, and different move strategies for human players, a  random computer, or an AI. For the AI (mode 3), the computer tries to win, block the player, or pick randomly by temporarily placing its symbol and checking win conditions using inline horizontal, vertical, and diagonal logic.
+
