@@ -3,7 +3,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         char[] board = new char[42]; // 7 columns x 6 rows
-        int mode = 0;
+        int mode;
         boolean playAgain = true;
         int blueWins = 0; // count-Blue wins
         int redWins = 0; // count-Red wins
@@ -11,7 +11,7 @@ public class Main {
             for (int i = 0; i < 42; i++) {
                 board[i] = ' ';
             }
-            // Select game mode
+            // Selecting game mode
             System.out.println("Connect 4 Game Modes:");
             System.out.println("1.PLayer vs Player");
             System.out.println("2.Player vs Computer (Random)");
@@ -20,6 +20,7 @@ public class Main {
             while (mode < 1 || mode > 3) {
                 System.out.println("Choose from mode (1-3): ");
                 String input = scanner.nextLine();
+                // check if input between 1 and 3
                 if (input.length() == 1 && input.charAt(0) >= '1' && input.charAt(0) <= '3') {
                     mode = Integer.parseInt(input);
                 } else {
@@ -43,11 +44,11 @@ public class Main {
                     System.out.println("|");
                 }
                 char currentPlayer = computerSymbol;
-                if (playerTurn == true) {
+                if (playerTurn) {
                     currentPlayer = playerSymbol;
                 }
                 int chosenColumn = -1; // default as no column is chosen
-                if (mode == 1 || (mode > 1 && playerTurn)) { // player's turn
+                if (mode == 1 || (playerTurn)) { // player's turn
                     boolean validMove = false;
                     while (!validMove) {
                         System.out.println("Scoreboard");
@@ -74,7 +75,7 @@ public class Main {
                             if (!columnFull) {
                                 validMove = true;
                             } else {
-                                System.out.println("Column is full! Please choose another.");
+                                System.out.println("Column is full! Please choose other.");
                             }
                         } else {
                             System.out.println("Invalid input! Enter from 1-7");
@@ -87,7 +88,7 @@ public class Main {
                     if (mode == 2) {
                         boolean validMove = false;
                         while (!validMove) {
-                            chosenColumn = (int) (Math.random() * (7-1)+1); // computer chooses
+                            chosenColumn = (int) (Math.random() * 7); // computer chooses
                             boolean columnFull = true;
                             for (int r = 5; r >= 0; r--) {
                                 int index = r * 7 + chosenColumn;
@@ -101,7 +102,7 @@ public class Main {
                             }
                         }
                         System.out.println("Computer chooses" + (chosenColumn + 1));
-                    } else if (mode == 3) {
+                    } else { // mode == 3
                         boolean moveMade = false;
                         for (int column = 0; column < 7 && !moveMade; column++) {
                             int row = 5;
@@ -117,8 +118,7 @@ public class Main {
                                 board[index] = computerSymbol;
                                 boolean win = false;
                                 int count = 0;
-                                //horizontal check
-                                count = 0;
+                                //horizontal
                                 for (int c = 0; c < 7; c++) {
                                     int i = row * 7 + c;
                                     if (board[i] == computerSymbol) {
@@ -130,7 +130,7 @@ public class Main {
                                         win = true;
                                     }
                                 }
-                                // vertical check
+                                // vertical
                                 if (!win) {
                                     count = 0;
                                     for (int r = 0; r < 6; r++) {
@@ -145,16 +145,14 @@ public class Main {
                                         }
                                     }
                                 }
-                                // diagonal-down check
+                                // diagonal down
                                 if (!win) {
                                     count = 0;
-                                    while (row > 0 && column > 0) {
-                                        row--;
-                                        column--;
-                                    }
-                                    while (row < 6 && column < 7) {
-                                        int i = row * 7 + column;
-                                        if (board[i] == computerSymbol) {
+                                    int rowCheck = row;
+                                    int columnCheck = column;
+                                    while (rowCheck < 6 && columnCheck < 7) {
+                                        int i = rowCheck * 7 + columnCheck;
+                                        if (board[i] == playerSymbol) {
                                             count++;
                                         } else {
                                             count = 0;
@@ -162,28 +160,267 @@ public class Main {
                                         if (count >= 4) {
                                             win = true;
                                         }
-                                        row++;
-                                        column++;
+                                        rowCheck++;
+                                        columnCheck++;
                                     }
                                 }
-                                //diagonal-up check
-                                count = 0;
-                                for (int c = 3; c < 7; c++) {
-                                    int i = row * 7 + c;
-                                    if (board[i] == computerSymbol) {
-                                        count++;
-                                    } else {
-                                        count = 0;
+                                // diagonal up
+                                if (!win) {
+                                    count = 0;
+                                    int rowCheck = row;
+                                    int columnCheck = column;
+                                    while (rowCheck >= 0 && columnCheck < 7) {
+                                        int i = rowCheck * 7 + columnCheck;
+                                        if (board[i] == playerSymbol) {
+                                            count++;
+                                        } else {
+                                            count = 0;
+                                        }
+                                        if (count >= 4) {
+                                            win = true;
+                                        }
+                                        rowCheck--;
+                                        columnCheck++;
                                     }
-                                    if (count >= 4) {
-                                        win = true;
+                                }
+                                board[index] = ' ';
+                                if (win) {
+                                    chosenColumn = column;
+                                    moveMade = true;
+                                }
+                            }
+                        }
+                        if (!moveMade) {
+                            for (int column = 0; column < 7 && !moveMade; column++) {
+                                int row = 5;
+                                while (row >= 0) {
+                                    int index = row * 7 + column;
+                                    if (board[index] == ' ') {
+                                        break;
+                                    }
+                                    row--;
+                                }
+                                if (row >= 0) {
+                                    int index = row * 7 + column;
+                                    board[index] = playerSymbol;
+                                    boolean win = false;
+                                    int count = 0;
+                                    //horizontal
+                                    for (int c = 0; c < 7; c++) {
+                                        int i = row * 7 + c;
+                                        if (board[i] == playerSymbol) {
+                                            count++;
+                                        } else {
+                                            count++;
+                                        }
+                                        if (count >= 4) {
+                                            win = true;
+                                        }
+                                    }
+                                    // vertical
+                                    if (!win) {
+                                        count = 0;
+                                        for (int r = 0; r < 6; r++) {
+                                            int i = r * 7 + column;
+                                            if (board[i] == playerSymbol) {
+                                                count++;
+                                            } else {
+                                                count = 0;
+                                            }
+                                            if (count >= 4) {
+                                                win = true;
+                                            }
+                                        }
+                                    }
+                                    // diagonal down
+                                    if (!win) {
+                                        count = 0;
+                                        int rowCheck = row;
+                                        int columnCheck = column;
+                                        while (rowCheck < 6 && columnCheck < 7) {
+                                            int i = rowCheck * 7 + columnCheck;
+                                            if (board[i] == playerSymbol) {
+                                                count++;
+                                            } else {
+                                                count = 0;
+                                            }
+                                            if (count >= 4) {
+                                                win = true;
+                                            }
+                                            rowCheck++;
+                                            columnCheck++;
+                                        }
+                                    }
+                                    // diagonal up
+                                    if (!win) {
+                                        count = 0;
+                                        int rowCheck = row;
+                                        int columnCheck = column;
+                                        while (rowCheck >= 0 && columnCheck < 7) {
+                                            int i = rowCheck * 7 + columnCheck;
+                                            if (board[i] == playerSymbol) {
+                                                count++;
+                                            } else {
+                                                count = 0;
+                                            }
+                                            if (count >= 4) {
+                                                win = true;
+                                            }
+                                            rowCheck--;
+                                            columnCheck++;
+                                        }
+                                    }
+                                    board[index] = ' ';
+                                    if (win) {
+                                        chosenColumn = column;
+                                        moveMade = true;
                                     }
                                 }
                             }
                         }
+                        if (!moveMade) {
+                            boolean validMove = false;
+                            while (!validMove) {
+                                chosenColumn = (int) (Math.random() * 7);
+                                boolean columnFull = true;
+                                for (int r = 5; r >= 0; r--) {
+                                    int index = r * 7 + chosenColumn;
+                                    if (board[index] == ' ') {
+                                        columnFull = false;
+                                        break;
+                                    }
+                                }
+                                if (!columnFull) {
+                                    validMove = true;
+                                }
+                            }
+                        }
+                        System.out.println("Computer chooses column " + (chosenColumn + 1));
                     }
                 }
+                // Drop piece
+                int placeInRow = -1;
+                for (int row = 5; row >= 0; row--) {
+                    int index = row * 7 + chosenColumn;
+                    if (board[index] == ' ') {
+                        board[index] = currentPlayer;
+                        placeInRow = row;
+                        break;
+                    }
+                }
+                // Check winner
+                boolean win = false;
+                int count = 0;
+                for (int c = 0; c < 7; c++) {
+                    int index = placeInRow * 7 + c;
+                    if (board[index] == currentPlayer) {
+                        count++;
+                        if (count >= 4) {
+                            win = true;
+                        }
+                    } else {
+                        count = 0;
+                    }
+                }
+                // vertical check if no win yet
+                if (!win) {
+                    count = 0;
+                    for (int r = 0; r < 6; r++) {
+                        int index = r * 7 + chosenColumn;
+                        if (board[index] == currentPlayer) {
+                            count++;
+                            if (count >= 4) {
+                                win = true;
+                            }
+                        } else {
+                            count = 0;
+                        }
+                    }
+                }
+                // Diagonal check if no win yet
+                if (!win) {
+                    count = 0;
+                    int rowCheck = placeInRow;
+                    int columnCheck = chosenColumn;
+                    while (rowCheck < 6 && columnCheck < 7) {
+                        int index = rowCheck * 7 + columnCheck;
+                        if (board[index] == currentPlayer) {
+                            count++;
+                            if (count >= 4) {
+                                win = true;
+                            }
+                        } else {
+                            count = 0;
+                        }
+                        rowCheck++;
+                        columnCheck++;
+                    }
+                }
+                // Diagonal up check if no win yet
+                if (!win) {
+                    count = 0;
+                    int rowCheck = placeInRow;
+                    int columnCheck = chosenColumn;
+                    while (rowCheck >= 0 && columnCheck < 7) {
+                        int index = rowCheck * 7 + columnCheck;
+                        if (board[index] == currentPlayer) {
+                            count++;
+                            if (count >= 4) {
+                                win = true;
+                            }
+                        } else {
+                            count = 0;
+                        }
+                        rowCheck--;
+                        columnCheck++;
+                    }
+                }
+                // Scoreboard after each move
+                System.out.println("Current board-");
+                System.out.println(" 1 2 3 4 5 6 7");
+                for (int row = 0; row < 6; row++) {
+                    for (int column = 0; column < 7; column++) {
+                        int index = row * 7 + column;
+                        System.out.print("|" + board[index]);
+                    }
+                    System.out.println("|");
+                }
+                if (win) {
+                    if (currentPlayer == 'B') {
+                        System.out.println("Player Blue wins!");
+                        blueWins++;
+                    } else {
+                        if (mode == 1 || (!playerTurn)) {
+                            System.out.println("Player Red wins! ");
+                        } else {
+                            System.out.println("Computer Red wins! ");
+                        }
+                        redWins++;
+                    }
+                    gameEnded = true;
+                    // scoreboard updated
+                    System.out.println("Scoreboard- ");
+                    System.out.println("Blue wins " + blueWins);
+                    System.out.println("Red wins " + redWins);
+                } else {
+                    playerTurn = !playerTurn;
+                }
+            }
+            // Ask play again
+            String answer = " ";
+            while (!answer.equalsIgnoreCase("Y") && !answer.equalsIgnoreCase("N")) {
+                System.out.println("Play again? (Y/N)");
+                answer = scanner.nextLine();
+                if (!answer.equalsIgnoreCase("Y") && !answer.equalsIgnoreCase("N")) {
+                    System.out.println("Invalid input! Enter Y or N");
+                }
+            }
+            if (answer.equalsIgnoreCase("N")) {
+                playAgain = false;
             }
         }
+        // Ending message
+        System.out.println("Thanks for playing!");
+        scanner.close();
     }
 }
